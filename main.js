@@ -42,7 +42,29 @@ async function loadModel() {
   return model;
 }
 
+function createNewWindow(text1, text2) {
+  const newWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
+    },
+    frame: false,
+  });
+
+  newWindow.loadFile("newWindow.html");
+
+  newWindow.webContents.on("did-finish-load", () => {
+    newWindow.webContents.send("set-text-content", text1, text2);
+  });
+}
+
+ipcMain.on("open-new-window", (event, text1, text2) => {
+  createNewWindow(text1, text2);
+});
+
 async function redact(text) {
+  setLoading(true);
   let model;
   model = await loadModel();
 
@@ -79,10 +101,12 @@ async function redact(text) {
   const result = await prediction;
   // process.stdout.write(JSON.stringify(result));
   process.stdout.write(result.content);
+  setLoading(false);
   return result.content;
 }
 
 async function checkPII(text) {
+  setLoading(true);
   let model;
   model = await loadModel();
   // const piiSchema = {
@@ -100,6 +124,7 @@ async function checkPII(text) {
   const result = await prediction;
   // process.stdout.write(JSON.stringify(result));
   // process.stdout.write(result.content);
+  setLoading(false);
   return result.content;
 }
 
@@ -113,7 +138,7 @@ const createWindow = () => {
     width: 250,
     height: 250,
     x: 1000,
-    y: 500,
+    y: 480,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
     },
@@ -140,29 +165,31 @@ const createWindow = () => {
         checkPII(text).then((result) => {
           process.stdout.write(result);
           if (result.trim().charAt(0) === "Y") {
-            const notification = new Notification({
-              title: "Personal Information Detected",
-              body: "Personal information detected in clipboard",
-              icon: path.join(__dirname, "icons", "info.png"),
-            });
+            sendMessageToRenderer("Personal information detected in clipboard");
+
+            // const notification = new Notification({
+            //   title: "Personal Information Detected",
+            //   body: "Personal information detected in clipboard",
+            //   icon: path.join(__dirname, "icons", "info.png"),
+            // });
             app.focus({ steal: true });
             mainWindow.flashFrame(true);
-            notification.show();
+            // notification.show();
 
-            redact(text).then((redactedText) => {
-              notification.on("click", () => {
-                const redactedWindow = new BrowserWindow({
-                width: 600,
-                height: 400,
-                webPreferences: {
-                  preload: path.join(__dirname, "preload.js"),
-                },
-                });
-                redactedWindow.loadURL(`data:text/plain;charset=utf-8,${encodeURIComponent(redactedText)}`);
-              });
+            // redact(text).then((redactedText) => {
+            //   notification.on("click", () => {
+            //     const redactedWindow = new BrowserWindow({
+            //     width: 600,
+            //     height: 400,
+            //     webPreferences: {
+            //       preload: path.join(__dirname, "preload.js"),
+            //     },
+            //     });
+            //     redactedWindow.loadURL(`data:text/plain;charset=utf-8,${encodeURIComponent(redactedText)}`);
+            //   });
 
-              process.stdout.write(redactedText);
-            });
+            //   process.stdout.write(redactedText);
+            // });
           }
         });
       }
@@ -251,8 +278,16 @@ app.on("will-quit", () => {
   globalShortcut.unregisterAll();
 });
 
+function setLoading(isLoading) {
+  const window = BrowserWindow.getFocusedWindow();
+  if (window) {
+    window.webContents.send("set-loading", isLoading);
+  }
+  process.stdout.write(`Loading: ${isLoading}\n`);
+}
 
 ipcMain.on("read-file", (event, filePath) => {
+  setLoading(true);
   const pdfBuffer = fs.readFileSync(filePath);
 
   const extname = path.extname(filePath).toLowerCase();
@@ -263,13 +298,15 @@ ipcMain.on("read-file", (event, filePath) => {
     pdf2md(pdfBuffer)
       .then((text) => {
         process.stdout.write(text);
-        redact(text).then((result) =>
+        redact(text).then((result) => {
           fs.writeFile(duplicateFilePath + ".md", result, (err) => {
             if (err) {
               console.error(`Error writing file: ${err.message}`);
               return;
             }
           })
+          setLoading(false);
+        }
         );
         process.stdout.write("Completed");
       })
@@ -283,6 +320,8 @@ ipcMain.on("read-file", (event, filePath) => {
         return;
       }
       redact(data).then((result) => {
+        decoded = decodeTemplate(data, createMapping(data, result));
+        createNewWindow(result, decoded);
         fs.writeFile(duplicateFilePath, result, (err) => {
           if (err) {
             console.error(`Error writing file: ${err.message}`);
@@ -290,7 +329,59 @@ ipcMain.on("read-file", (event, filePath) => {
           }
         });
         process.stdout.write("Completed");
+        setLoading(false);
       });
     });
   }
 });
+
+function sendMessageToRenderer(message) {
+  const window = BrowserWindow.getFocusedWindow();
+  if (window) {
+    window.webContents.send("display-message", message);
+  }
+}
+
+
+function createMapping(template, actual) {
+  const templateWords = template.split(" ");
+  const actualWords = actual.split(" ");
+
+  // Find placeholders (words wrapped in brackets) in the template
+  const placeholders = templateWords.map((word, index) => ({
+    isPlaceholder: word.startsWith("[") && word.endsWith("]"),
+    word,
+    index,
+  }));
+
+  // Filter out the non-placeholder words from the template
+  const nonPlaceholderWords = templateWords.filter(
+    (word) => !word.startsWith("[") || !word.endsWith("]")
+  );
+
+  // Filter out non-placeholder words from the actual sentence
+  const actualFiltered = actualWords.filter(
+    (word) => !nonPlaceholderWords.includes(word)
+  );
+
+  // Map placeholders to actual values
+  const mapping = {};
+  placeholders.forEach((placeholder) => {
+    if (placeholder.isPlaceholder) {
+      const key = placeholder.word.replace(/[\[\]]/g, ""); // Remove brackets
+      const actualValue = actualFiltered.shift(); // Get the next actual word
+      mapping[key] = actualValue;
+    }
+  });
+
+  return mapping;
+}
+
+
+function decodeTemplate(template, mapping) {
+  // Replace each placeholder in the template with its corresponding value
+  return template.replace(/\[.*?\]/g, (match) => {
+    const key = match.replace(/[\[\]]/g, ""); // Extract key without brackets
+    return mapping[key] || match; // Replace with value from mapping or keep original
+  });
+}

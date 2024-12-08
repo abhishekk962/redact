@@ -11,6 +11,7 @@ document.getElementById("close-btn").addEventListener("click", () => {
 })
 const dropArea = document.getElementById("drop-area")
 const dropAreaIcon = document.getElementById("drop-area-icon")
+const loadingIndicator = document.getElementById("loading-indicator");
 
 // Prevent default behavior for drag-and-drop events
 ;["dragenter", "dragover", "dragleave", "drop"].forEach((event) => {
@@ -54,3 +55,42 @@ dropAreaIcon.addEventListener("click", () => {
   }
   input.click()
 })
+
+// Listen for loading state changes
+window.electronAPI.onLoadingStateChange((isLoading) => {
+  if (isLoading) {
+    loadingIndicator.style.display = "flex";
+  } else {
+    loadingIndicator.style.display = "none";
+  }
+});
+
+
+// Listen for messages from the main process
+window.electronAPI.onDisplayMessage((message) => {
+  displayPopup(message);
+});
+
+// Function to display a popup message
+function displayPopup(message) {
+  const popup = document.createElement("div");
+  popup.className = "popup-message";
+  popup.textContent = message;
+  document.body.appendChild(popup);
+
+  setTimeout(() => {
+    popup.classList.add("show");
+  }, 10);
+
+  setTimeout(() => {
+    popup.classList.remove("show");
+    setTimeout(() => {
+      document.body.removeChild(popup);
+    }, 300);
+  }, 3000);
+}
+
+// Function to open a new window with text content
+function openNewWindowWithText(text1, text2) {
+  window.electronAPI.openNewWindow(text1, text2);
+}
