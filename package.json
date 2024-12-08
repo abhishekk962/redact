@@ -10,5 +10,10 @@
   },
   "scripts": {
     "start": "electron ."
+  },
+  "dependencies": {
+    "@lmstudio/sdk": "^0.4.2",
+    "@opendocsg/pdf2md": "^0.2.0",
+    "file-type": "^19.6.0"
   }
 }
