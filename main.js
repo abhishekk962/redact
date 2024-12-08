@@ -222,7 +222,7 @@ const createWindow = () => {
   //   shell.beep();
   // });
   // Open the DevTools.
-  mainWindow.webContents.openDevTools()
+  // mainWindow.webContents.openDevTools()
 
   const menuTemplate = [
     {
