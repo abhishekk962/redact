@@ -23,6 +23,8 @@ const { screen } = require("electron");
 const client = new LMStudioClient();
 const modelPath = "Beta/Llama-3.2-3B-QNN";
 
+let mapping = {};
+
 const redactPrompt =
   'You are an assitant that replaces all personal details like names, addresses, and phone numbers with placeholders (e.g., [Name], [Address], [Phone Number]) and responds in this JSON format: {"redactedText": "The redacted text"}';
 
@@ -57,10 +59,38 @@ function createNewWindow(text1, text2) {
   newWindow.webContents.on("did-finish-load", () => {
     newWindow.webContents.send("set-text-content", text1, text2);
   });
+  // newWindow.webContents.openDevTools()
 }
 
 ipcMain.on("open-new-window", (event, text1, text2) => {
   createNewWindow(text1, text2);
+});
+
+
+ipcMain.on("redact-clipboard", (event) => {
+  const text = clipboard.readText();
+  if (text) {
+    redact(text).then((result) => {
+      clipboard.writeText(result);
+      createNewWindow(result, text);
+      sendMessageToRenderer("Clipboard redacted");
+    });
+  } else {
+    sendMessageToRenderer("No text found in clipboard");
+  }
+});
+
+ipcMain.on("restore-clipboard", (event) => {
+  const text = clipboard.readText();
+  if (text) {
+    const text = clipboard.readText();
+    const restored = decodeTemplate(text, mapping);
+    clipboard.writeText(restored);
+    createNewWindow(text, restored);
+    sendMessageToRenderer("Clipboard restored");
+  } else {
+    sendMessageToRenderer("No text found in clipboard");
+  }
 });
 
 async function redact(text) {
@@ -100,7 +130,7 @@ async function redact(text) {
   // }
   const result = await prediction;
   // process.stdout.write(JSON.stringify(result));
-  process.stdout.write(result.content);
+  // process.stdout.write(result.content);
   setLoading(false);
   return result.content;
 }
@@ -167,41 +197,32 @@ const createWindow = () => {
           if (result.trim().charAt(0) === "Y") {
             sendMessageToRenderer("Personal information detected in clipboard");
 
-            // const notification = new Notification({
-            //   title: "Personal Information Detected",
-            //   body: "Personal information detected in clipboard",
-            //   icon: path.join(__dirname, "icons", "info.png"),
-            // });
+            const notification = new Notification({
+              title: "Personal Information Detected",
+              body: "Personal information detected in clipboard",
+              icon: path.join(__dirname, "icons", "info.png"),
+            });
             app.focus({ steal: true });
             mainWindow.flashFrame(true);
-            // notification.show();
+            notification.show();
 
-            // redact(text).then((redactedText) => {
-            //   notification.on("click", () => {
-            //     const redactedWindow = new BrowserWindow({
-            //     width: 600,
-            //     height: 400,
-            //     webPreferences: {
-            //       preload: path.join(__dirname, "preload.js"),
-            //     },
-            //     });
-            //     redactedWindow.loadURL(`data:text/plain;charset=utf-8,${encodeURIComponent(redactedText)}`);
-            //   });
-
-            //   process.stdout.write(redactedText);
-            // });
+            notification.on("click", () => {
+              shell.beep();
+              mainWindow.show();
+              mainWindow.focus();
+            });
           }
         });
       }
     }, 1000);
   }
-  monitorClipboard();
+  // monitorClipboard();
   // // Register a global shortcut for Ctrl+C
   // globalShortcut.register("CommandOrControl+C+1", () => {
   //   shell.beep();
   // });
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  mainWindow.webContents.openDevTools()
 
   const menuTemplate = [
     {
@@ -212,21 +233,6 @@ const createWindow = () => {
       },
     },
   ];
-
-  // const iconPath = path.join(__dirname, "icons", "icon.ico");
-  // const tray = new Tray(iconPath);
-
-  // tray.on("click", () => {
-  //   if (mainWindow.isVisible()) {
-  //     mainWindow.hide();
-  //     app.focus({ steal: true });
-  //   } else {
-  //     mainWindow.show();
-  //   }
-  // });
-
-  // const contextMenu = Menu.buildFromTemplate(menuTemplate);
-  // tray.setContextMenu(contextMenu);
 };
 
 // This method will be called when Electron has finished
@@ -283,7 +289,7 @@ function setLoading(isLoading) {
   if (window) {
     window.webContents.send("set-loading", isLoading);
   }
-  process.stdout.write(`Loading: ${isLoading}\n`);
+  // process.stdout.write(`Loading: ${isLoading}\n`);
 }
 
 ipcMain.on("read-file", (event, filePath) => {
@@ -308,7 +314,7 @@ ipcMain.on("read-file", (event, filePath) => {
           setLoading(false);
         }
         );
-        process.stdout.write("Completed");
+        // process.stdout.write("Completed");
       })
       .catch((err) => {
         console.error(err);
@@ -328,7 +334,7 @@ ipcMain.on("read-file", (event, filePath) => {
             return;
           }
         });
-        process.stdout.write("Completed");
+        // process.stdout.write("Completed");
         setLoading(false);
       });
     });
@@ -365,7 +371,6 @@ function createMapping(template, actual) {
   );
 
   // Map placeholders to actual values
-  const mapping = {};
   placeholders.forEach((placeholder) => {
     if (placeholder.isPlaceholder) {
       const key = placeholder.word.replace(/[\[\]]/g, ""); // Remove brackets
@@ -378,7 +383,8 @@ function createMapping(template, actual) {
 }
 
 
-function decodeTemplate(template, mapping) {
+function decodeTemplate(template) {
+  process.stdout.write(`Template: ${JSON.stringify(mapping)}\n`);
   // Replace each placeholder in the template with its corresponding value
   return template.replace(/\[.*?\]/g, (match) => {
     const key = match.replace(/[\[\]]/g, ""); // Extract key without brackets

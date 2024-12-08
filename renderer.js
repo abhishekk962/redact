@@ -12,6 +12,8 @@ document.getElementById("close-btn").addEventListener("click", () => {
 const dropArea = document.getElementById("drop-area")
 const dropAreaIcon = document.getElementById("drop-area-icon")
 const loadingIndicator = document.getElementById("loading-indicator");
+const clipboard = document.getElementById("clipboard");
+const restore = document.getElementById("restore");
 
 // Prevent default behavior for drag-and-drop events
 ;["dragenter", "dragover", "dragleave", "drop"].forEach((event) => {
@@ -44,7 +46,7 @@ dropArea.addEventListener("drop", (e) => {
 })
 
 // Handle file picker
-dropAreaIcon.addEventListener("click", () => {
+dropArea.addEventListener("click", () => {
   const input = document.createElement("input")
   input.type = "file"
   input.onchange = (e) => {
@@ -54,6 +56,14 @@ dropAreaIcon.addEventListener("click", () => {
     }
   }
   input.click()
+})
+
+clipboard.addEventListener("click", () => {
+  window.electronAPI.redactClipboard()
+})
+
+restore.addEventListener("click", () => {
+  window.electronAPI.restoreClipboard()
 })
 
 // Listen for loading state changes

@@ -36,3 +36,17 @@ document.getElementById("minimize-btn").addEventListener("click", () => {
     });
     return highlightedText;
   }
+
+
+//   function addClickEventToHighlights() {
+//     const highlights = document.querySelectorAll('.highlight');
+//     highlights.forEach((highlight) => {
+//       highlight.addEventListener('click', function() {
+//         console.log(`Clicked on: ${this.textContent}`);
+//         window.electronAPI.decodeTemplate(this.textContent).then((decodedValue) => {
+//           this.outerHTML = decodedValue;
+//         });
+//       });
+//     });
+//   }
+//   addClickEventToHighlights()
