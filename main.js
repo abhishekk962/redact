@@ -216,7 +216,7 @@ const createWindow = () => {
       }
     }, 1000);
   }
-  // monitorClipboard();
+  monitorClipboard();
   // // Register a global shortcut for Ctrl+C
   // globalShortcut.register("CommandOrControl+C+1", () => {
   //   shell.beep();
