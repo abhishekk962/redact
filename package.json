@@ -1,0 +1,14 @@
+{
+  "name": "redact",
+  "version": "1.0.0",
+  "description": "Restricting Exposed Data by Anonymization for Confidential Transmission",
+  "main": "main.js",
+  "author": "Abhishek",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.1"
+  },
+  "scripts": {
+    "start": "electron ."
+  }
+}

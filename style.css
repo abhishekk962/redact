@@ -1,0 +1,135 @@
+/* styles.css */
+
+/* General Reset */
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Inter", sans-serif;
+  color: #333;
+  background-color: #f4f4f9;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+/* Title Bar */
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #404040;
+  color: white;
+  padding: 12px 16px;
+  -webkit-app-region: drag; /* Enable dragging */
+  user-select: none; /* Prevent text selection */
+}
+
+.title-bar span {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.title-bar button {
+  background-color: rgba(255, 255, 255, 0.147);
+  border: none;
+  color: white;
+  cursor: pointer;
+  font-size: 14px;
+  border-radius: 4px;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  -webkit-app-region: no-drag; /* Exclude buttons from dragging */
+}
+
+.title-bar button:hover {
+  background-color: #838383;
+  transform: scale(1.05);
+}
+
+.title-bar button:active {
+  transform: scale(0.95);
+}
+
+/* Content Area */
+.content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 0 30px 30px 30px;
+  background-color: #252525;
+}
+
+.content h1 {
+  font-size: 32px;
+  margin-bottom: 16px;
+  font-weight: 600;
+  color: #969696;
+}
+
+.content span {
+  font-size: 10px;
+  line-height: 1.6;
+  color: #e1e1e1;
+  max-width: 600px;
+}
+
+/* Buttons for the Content */
+.button {
+  margin-top: 20px;
+  padding: 5px 10px;
+  background-color: #323232;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.button:hover {
+  background-color: #8b8b8b;
+  transform: translateY(-2px);
+}
+
+.button:active {
+  transform: translateY(0);
+}
+button img {
+  width: 10px;
+  height: 10px;
+}
+/* Drop Area Styling */
+.drop-area {
+  width: 90%;
+  height: 40%;
+  margin: 40px auto 0 auto;
+  border: 3px dashed #898989;
+  border-radius: 12px;
+  background-color: #424242;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #969696;
+  font-size: 18px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+  box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+.drop-area.highlight {
+  background-color: #8e8e8e;
+  border-color: #969696;
+  color: white;
+  transform: scale(1.05);
+}
+
+/* Drop Area Icon */
+.drop-area-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+  color: #969696;
+}

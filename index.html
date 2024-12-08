@@ -1,0 +1,47 @@
+<!--index.html-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <title>R.E.D.A.C.T</title>
+  </head>
+  <body>
+    <div class="title-bar">
+      <div></div>
+      <div>
+        <button id="minimize-btn">
+          <img src="icons/minimize.svg" alt="Minimize" />
+        </button>
+        <button id="maximize-btn">
+          <img src="icons/maximize.svg" alt="Maximize" />
+        </button>
+        <button id="close-btn">
+          <img src="icons/close.svg" alt="Close" />
+        </button>
+      </div>
+    </div>
+    <div class="content">
+      <h1>R.E.D.A.C.T</h1>
+
+      <div id="drop-area" class="drop-area">
+        <div class="drop-area-icon">
+          <img
+            src="icons/sanitise.svg"
+            alt="Sanitise"
+            height="50px"
+            width="auto"
+          />
+        </div>
+        Drop your files here
+      </div>
+    </div>
+    <!-- You can also require other files to run in this process -->
+    <script src="./renderer.js"></script>
+  </body>
+</html>
