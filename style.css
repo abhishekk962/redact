@@ -102,9 +102,8 @@ button img {
 }
 /* Drop Area Styling */
 .drop-area {
-  width: 90%;
-  height: 40%;
-  margin: 40px auto 0 auto;
+  width: 40%;
+  height: auto;
   border: 3px dashed #898989;
   border-radius: 12px;
   background-color: #424242;
@@ -129,7 +128,39 @@ button img {
 
 /* Drop Area Icon */
 .drop-area-icon {
-  font-size: 50px;
-  margin-bottom: 15px;
+  font-size: 40px;
+  margin-bottom: 5px;
+  color: #969696;
+}
+
+.flex-container {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: 100%;
+  padding: 20px;
+}
+
+/* Clipboard Styling */
+.clipboard {
+  width: 40%;
+  height: auto;
+  border-radius: 12px;
+  border: 3px solid #424242;
+  background-color: #424242;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #969696;
+  font-size: 18px;
+  font-weight: 500;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.clipboard-icon {
+  font-size: 40px;
+  margin-bottom: 5px;
   color: #969696;
 }

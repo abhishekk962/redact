@@ -10,6 +10,7 @@ document.getElementById("close-btn").addEventListener("click", () => {
   window.electronAPI.closeWindow()
 })
 const dropArea = document.getElementById("drop-area")
+const dropAreaIcon = document.getElementById("drop-area-icon")
 
 // Prevent default behavior for drag-and-drop events
 ;["dragenter", "dragover", "dragleave", "drop"].forEach((event) => {
@@ -39,4 +40,17 @@ dropArea.addEventListener("drop", (e) => {
     const file = files[0] // Get the path of the first dropped file
     window.electronAPI.readFile(file)
   }
+})
+
+// Handle file picker
+dropAreaIcon.addEventListener("click", () => {
+  const input = document.createElement("input")
+  input.type = "file"
+  input.onchange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      window.electronAPI.readFile(file)
+    }
+  }
+  input.click()
 })
