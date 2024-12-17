@@ -124,10 +124,10 @@ async function redact(text) {
   );
 
   // let result = "";
-  // for await (const { content } of prediction) {
-  //   result += content;
-  //   process.stdout.write(content);
-  // }
+  for await (const { content } of prediction) {
+    // result += content;
+    process.stdout.write(content);
+  }
   const result = await prediction;
   // process.stdout.write(JSON.stringify(result));
   // process.stdout.write(result.content);
