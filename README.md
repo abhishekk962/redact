@@ -10,6 +10,10 @@
 - Visual indicators for loading states.
 - Popup messages for user notifications.
 
+## Preview
+
+![R.E.D.A.C.T Preview](images/preview.png)
+
 ## Installation
 
 1. Clone the repository:
@@ -25,7 +29,9 @@
     npm install
     ```
 
-3. Start the application:
+3. Install LM Studio from [https://lmstudio.ai/](https://lmstudio.ai/).
+
+4. Start the application:
 
     ```sh
     npm start
