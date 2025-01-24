@@ -15,7 +15,7 @@ document.getElementById("minimize-btn").addEventListener("click", () => {
     const highlightedText = highlightKeywords(text1, keywords);
     document.getElementById("text-content1").innerHTML = highlightedText;
     document.getElementById("text-content2").innerHTML = text2;
-
+    addClickEventToHighlights();
   });
   
   function extractKeywords(text) {
@@ -38,15 +38,14 @@ document.getElementById("minimize-btn").addEventListener("click", () => {
   }
 
 
-//   function addClickEventToHighlights() {
-//     const highlights = document.querySelectorAll('.highlight');
-//     highlights.forEach((highlight) => {
-//       highlight.addEventListener('click', function() {
-//         console.log(`Clicked on: ${this.textContent}`);
-//         window.electronAPI.decodeTemplate(this.textContent).then((decodedValue) => {
-//           this.outerHTML = decodedValue;
-//         });
-//       });
-//     });
-//   }
-//   addClickEventToHighlights()
+  function addClickEventToHighlights() {
+    const highlights = document.querySelectorAll('.highlight');
+    highlights.forEach((highlight) => {
+      highlight.addEventListener('click', function() {
+        console.log(`Clicked on: ${this.textContent}`);
+        window.electronAPI.decodeWord(this.textContent).then((decodedValue) => {
+          this.outerHTML = decodedValue;
+        });
+      });
+    });
+  }

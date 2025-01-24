@@ -19,7 +19,7 @@
 1. Clone the repository:
 
     ```sh
-    git clone https://github.com/yourusername/redact.git
+    git clone https://github.com/abhishekk962/redact.git
     cd redact
     ```
 

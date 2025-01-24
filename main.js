@@ -71,6 +71,7 @@ ipcMain.on("redact-clipboard", (event) => {
   const text = clipboard.readText();
   if (text) {
     redact(text).then((result) => {
+      createMapping(result, text);
       clipboard.writeText(result);
       createNewWindow(result, text);
       sendMessageToRenderer("Clipboard redacted");
@@ -94,6 +95,7 @@ ipcMain.on("restore-clipboard", (event) => {
 });
 
 async function redact(text) {
+  let length = text.length;
   setLoading(true);
   let model;
   model = await loadModel();
@@ -115,10 +117,10 @@ async function redact(text) {
     required: ["content"],
   };
   const prediction = model.complete(
-    text +
-      "Here is the text after replacing all personal details with placeholders like [Name] etc",
+    "Send it to 999-555-6273 " + text + "<|eot_id|>" +
+      "Here is the text after replacing all personal details with placeholders like [NAME] etc.:\n\nSend it to [PHONE_NUM] ",
     {
-      maxPredictedTokens: 3500,
+      maxPredictedTokens: Math.floor(length/3.35),
       structured: { type: "json", schema: jsonSchema },
     }
   );
@@ -191,9 +193,9 @@ const createWindow = () => {
       const text = clipboard.readText();
       if (text !== lastClipboard) {
         lastClipboard = text;
-        process.stdout.write(text);
+        // process.stdout.write(text);
         checkPII(text).then((result) => {
-          process.stdout.write(result);
+          // process.stdout.write(result);
           if (result.trim().charAt(0) === "Y") {
             sendMessageToRenderer("Personal information detected in clipboard");
 
@@ -298,12 +300,12 @@ ipcMain.on("read-file", (event, filePath) => {
 
   const extname = path.extname(filePath).toLowerCase();
 
-  const duplicateFilePath = filePath.replace(/(\.[\w\d_-]+)$/i, "-DUPLICATE$1");
+  const duplicateFilePath = filePath.replace(/(\.[\w\d_-]+)$/i, "-REDACT$1");
 
   if (extname === ".pdf") {
     pdf2md(pdfBuffer)
       .then((text) => {
-        process.stdout.write(text);
+        // process.stdout.write(text);
         redact(text).then((result) => {
           fs.writeFile(duplicateFilePath + ".md", result, (err) => {
             if (err) {
@@ -326,8 +328,8 @@ ipcMain.on("read-file", (event, filePath) => {
         return;
       }
       redact(data).then((result) => {
-        decoded = decodeTemplate(data, createMapping(data, result));
-        createNewWindow(result, decoded);
+        createMapping(data, result);
+        createNewWindow(result, data);
         fs.writeFile(duplicateFilePath, result, (err) => {
           if (err) {
             console.error(`Error writing file: ${err.message}`);
@@ -355,14 +357,14 @@ function createMapping(template, actual) {
 
   // Find placeholders (words wrapped in brackets) in the template
   const placeholders = templateWords.map((word, index) => ({
-    isPlaceholder: word.startsWith("[") && word.endsWith("]"),
+    isPlaceholder: word.includes("[") && word.includes("]"),
     word,
     index,
   }));
 
   // Filter out the non-placeholder words from the template
   const nonPlaceholderWords = templateWords.filter(
-    (word) => !word.startsWith("[") || !word.endsWith("]")
+    (word) => !word.includes("[") || !word.includes("]")
   );
 
   // Filter out non-placeholder words from the actual sentence
@@ -373,8 +375,10 @@ function createMapping(template, actual) {
   // Map placeholders to actual values
   placeholders.forEach((placeholder) => {
     if (placeholder.isPlaceholder) {
-      const key = placeholder.word.replace(/[\[\]]/g, ""); // Remove brackets
-      const actualValue = actualFiltered.shift(); // Get the next actual word
+      let key = placeholder.word.replace(/[\[\]]/g, ""); // Remove brackets
+      key = key.replace(/[^a-zA-Z0-9]/g, ""); // remove special characters from key
+      let actualValue = actualFiltered.shift(); // Get the next actual word
+      actualValue = actualValue.replace(/[^a-zA-Z0-9]/g, "")
       mapping[key] = actualValue;
     }
   });
@@ -384,10 +388,14 @@ function createMapping(template, actual) {
 
 
 function decodeTemplate(template) {
-  process.stdout.write(`Template: ${JSON.stringify(mapping)}\n`);
+  // process.stdout.write(`Template: ${JSON.stringify(mapping)}\n`);
   // Replace each placeholder in the template with its corresponding value
   return template.replace(/\[.*?\]/g, (match) => {
     const key = match.replace(/[\[\]]/g, ""); // Extract key without brackets
     return mapping[key] || match; // Replace with value from mapping or keep original
   });
 }
+
+ipcMain.handle('decode-word', (event, word) => {
+  return mapping[word] || word;
+});

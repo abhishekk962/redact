@@ -14,6 +14,7 @@ contextBridge.exposeInMainWorld("electronAPI", {
   onDisplayMessage: (callback) => ipcRenderer.on("display-message", (event, message) => callback(message)),
   onTextContent: (callback) => ipcRenderer.on("set-text-content", (event, text1, text2) => callback(text1, text2)),
   decodeTemplate: (text) => ipcRenderer.invoke("decode-template", text),
+  decodeWord: (text) => {return ipcRenderer.invoke("decode-word", text)},
   redactClipboard: () => ipcRenderer.send("redact-clipboard"),
   restoreClipboard: () => ipcRenderer.send("restore-clipboard"),
 })
