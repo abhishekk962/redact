@@ -1,35 +1,35 @@
-<!-- newWindow.html -->
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <title>New Window</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-  <link rel="stylesheet" href="style.css" />
-  <title>New Window</title>
-</head>
-
-<body>
-  <div class="title-bar">
-    <span>R.E.D.A.C.T</span>
-    <div class="title-bar-buttons">
-      <button id="minimize-btn">
-        <img src="icons/minimize.svg" alt="Minimize" />
-      </button>
-      <button id="maximize-btn">
-        <img src="icons/maximize.svg" alt="Maximize" />
-      </button>
-      <button id="close-btn">
-        <img src="icons/close.svg" alt="Close" />
-      </button>
+  <body>
+    <div class="title-bar">
+      <span>R.E.D.A.C.T</span>
+      <div class="title-bar-buttons">
+        <button id="minimize-btn">
+          <img src="./icons/minimize.svg" alt="Minimize" />
+        </button>
+        <button id="maximize-btn">
+          <img src="./icons/maximize.svg" alt="Maximize" />
+        </button>
+        <button id="close-btn">
+          <img src="./icons/close.svg" alt="Close" />
+        </button>
+      </div>
     </div>
-  </div>
-  <div class="content text-contents">
-    <div id="text-content1" class="text-content"></div>
-    <hr width="100%">
-    <div id="text-content2" class="text-content"></div>
-  </div>
-  <script src="./newWindowRenderer.js"></script>
-</body>
-
+    <div class="content text-contents">
+      <div id="text-content1" class="text-content"></div>
+      <hr width="100%" />
+      <div id="text-content2" class="text-content"></div>
+    </div>
+    <script src="./newWindowRenderer.js"></script>
+  </body>
 </html>

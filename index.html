@@ -1,58 +1,76 @@
-<!--index.html-->
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'"
+    />
+    <link rel="stylesheet" href="./styles/style.css" />
+    <title>R.E.D.A.C.T</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <!-- https://developer.mozilla.org/en-US/docs/Web/HTTP/CSP -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'" />
-  <link rel="stylesheet" href="style.css" />
-  <title>R.E.D.A.C.T</title>
-</head>
-
-<body>
-  <div class="title-bar">
-    <div></div>
-    <div>
-      <button id="minimize-btn">
-        <img src="icons/minimize.svg" alt="Minimize" />
-      </button>
-      <button id="maximize-btn">
-        <img src="icons/maximize.svg" alt="Maximize" />
-      </button>
-      <button id="close-btn">
-        <img src="icons/close.svg" alt="Close" />
-      </button>
-    </div>
-  </div>
-  <div class="content">
-    <h1>R.E.D.A.C.T</h1>
-    <div id="loading-indicator" class="loading-indicator" style="display: none;">
-      <div class="spinner"></div>
-    </div>
-    <div class="flex-container">
-      <div id="drop-area" class="drop-area">
-        <div class="drop-area-icon" id="drop-area-icon">
-          <img src="icons/sanitise.svg" alt="Sanitise Document" height="30px" width="auto" />
-        </div>
-        <span class="icon-label">Redact Document</span>
-      </div>
-      <div id="clipboard" class="clipboard">
-        <div class="clipboard-icon">
-          <img src="icons/clipboard.svg" alt="Sanitise Clipboard" height="30px" width="auto" />
-        </div>
-        <span class="icon-label">Redact Clipboard</span>
-      </div>
-      <div id="restore" class="desanitise">
-        <div class="desanitise-icon">
-          <img src="icons/desanitise.svg" alt="Desanitise Clipboard" height="30px" width="auto" />
-        </div>
-        <span class="icon-label">Restore Clipboard</span>
+  <body>
+    <div class="title-bar">
+      <div></div>
+      <div>
+        <button id="minimize-btn">
+          <img src="./icons/minimize.svg" alt="Minimize" />
+        </button>
+        <button id="maximize-btn">
+          <img src="./icons/maximize.svg" alt="Maximize" />
+        </button>
+        <button id="close-btn">
+          <img src="./icons/close.svg" alt="Close" />
+        </button>
       </div>
     </div>
-  </div>
-    <!-- You can also require other files to run in this process -->
+    <div class="content">
+      <h1>R.E.D.A.C.T</h1>
+      <div
+        id="loading-indicator"
+        class="loading-indicator"
+        style="display: none"
+      >
+        <div class="spinner"></div>
+      </div>
+      <div class="flex-container">
+        <div id="drop-area" class="drop-area">
+          <div class="drop-area-icon" id="drop-area-icon">
+            <img
+              src="./icons/sanitise.svg"
+              alt="Sanitise Document"
+              height="30px"
+              width="auto"
+            />
+          </div>
+          <span class="icon-label">Redact Document</span>
+        </div>
+        <div id="clipboard" class="clipboard">
+          <div class="clipboard-icon">
+            <img
+              src="./icons/clipboard.svg"
+              alt="Sanitise Clipboard"
+              height="30px"
+              width="auto"
+            />
+          </div>
+          <span class="icon-label">Redact Clipboard</span>
+        </div>
+        <div id="restore" class="desanitise">
+          <div class="desanitise-icon">
+            <img
+              src="./icons/desanitise.svg"
+              alt="Desanitise Clipboard"
+              height="30px"
+              width="auto"
+            />
+          </div>
+          <span class="icon-label">Restore Clipboard</span>
+        </div>
+      </div>
+    </div>
     <script src="./renderer.js"></script>
-</body>
-
+  </body>
 </html>

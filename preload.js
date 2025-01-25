@@ -1,20 +1,39 @@
-// preload.js
-
-const { ipcRenderer, contextBridge, webUtils } = require("electron")
+const { ipcRenderer, contextBridge, webUtils } = require("electron");
 
 contextBridge.exposeInMainWorld("electronAPI", {
-  minimizeWindow: () => ipcRenderer.send("minimize-window"),
-  maximizeWindow: () => ipcRenderer.send("maximize-window"),
-  closeWindow: () => ipcRenderer.send("close-window"),
-  readFile: (file) => {
-    const path = webUtils.getPathForFile(file)
-    ipcRenderer.send("read-file", path)
+  closeWindow: () => {
+    ipcRenderer.send("close-window");
   },
-  onLoadingStateChange: (callback) => ipcRenderer.on("set-loading", (event, isLoading) => callback(isLoading)),
-  onDisplayMessage: (callback) => ipcRenderer.on("display-message", (event, message) => callback(message)),
-  onTextContent: (callback) => ipcRenderer.on("set-text-content", (event, text1, text2) => callback(text1, text2)),
-  decodeTemplate: (text) => ipcRenderer.invoke("decode-template", text),
-  decodeWord: (text) => {return ipcRenderer.invoke("decode-word", text)},
-  redactClipboard: () => ipcRenderer.send("redact-clipboard"),
-  restoreClipboard: () => ipcRenderer.send("restore-clipboard"),
-})
+  minimizeWindow: () => {
+    ipcRenderer.send("minimize-window");
+  },
+  maximizeWindow: () => {
+    ipcRenderer.send("maximize-window");
+  },
+  redactClipboard: () => {
+    ipcRenderer.send("redact-clipboard");
+  },
+  restoreClipboard: () => {
+    ipcRenderer.send("restore-clipboard");
+  },
+  decodeTemplate: (text) => {
+    ipcRenderer.invoke("decode-template", text);
+  },
+  onLoadingStateChange: (callback) => {
+    ipcRenderer.on("set-loading", (event, isLoading) => callback(isLoading));
+  },
+  onDisplayMessage: (callback) => {
+    ipcRenderer.on("display-message", (event, message) => callback(message));
+  },
+  onSendText: (callback) => {
+    ipcRenderer.on("send-text", (event, text1, text2) =>
+      callback(text1, text2)
+    );
+  },
+  redactFile: (file) => {
+    ipcRenderer.send("redact-file", webUtils.getPathForFile(file));
+  },
+  decodeWord: (text) => {
+    return ipcRenderer.invoke("decode-word", text);
+  },
+});
