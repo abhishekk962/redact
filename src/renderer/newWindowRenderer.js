@@ -33,7 +33,7 @@ function highlightKeywords(text, keywords) {
     const regex = new RegExp(`\\[${keyword}\\]`, "gi");
     highlightedText = highlightedText.replace(
       regex,
-      `<span class="highlight">${keyword}</span>`
+      `<span class="highlight">[${keyword}]</span>`
     );
   });
   return highlightedText;
@@ -44,7 +44,9 @@ function addClickEventToHighlights() {
   highlights.forEach((highlight) => {
     highlight.addEventListener("click", function () {
       console.log(`Clicked on: ${this.textContent}`);
-      window.electronAPI.decodeWord(this.textContent).then((decodedValue) => {
+      let content = this.textContent;
+      content = content.replace(/[\[\]]/g, "");
+      window.electronAPI.decodeWord(content).then((decodedValue) => {
         this.outerHTML = decodedValue;
       });
     });
