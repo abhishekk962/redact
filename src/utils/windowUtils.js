@@ -35,24 +35,6 @@ function sendMessageToRenderer(message) {
     window.webContents.send("display-message", message);
   }
 }
-
-// Create a new window to display the results (input and output text)
-function createNewWindow(text1, text2) {
-  const newWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
-    },
-    frame: false,
-  });
-  newWindow.loadFile("newWindow.html");
-  newWindow.webContents.on("did-finish-load", () => {
-    newWindow.webContents.send("send-text", text1, text2);
-  });
-  // newWindow.webContents.openDevTools()
-}
-
 // Set the loading state in the renderer process to show a loading spinner
 function setLoading(isLoading) {
   const window = BrowserWindow.getFocusedWindow();
@@ -66,7 +48,7 @@ function sendNotification(window, title, body) {
   const notification = new Notification({
     title: title,
     body: body,
-    icon: path.join(__dirname, "icons", "info.png"),
+    icon: path.join(__dirname, "../../public/icons/info.png"),
   });
   app.focus({ steal: true });
   window.flashFrame(true);

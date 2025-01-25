@@ -2,7 +2,7 @@ const fs = require("fs");
 const path = require("node:path");
 const pdf2md = require("@opendocsg/pdf2md");
 const { LMStudioClient } = require("@lmstudio/sdk");
-const { createMapping, decodeTemplate } = require("./utils/textUtils");
+const { createMapping, decodeTemplate } = require("../utils/textUtils");
 const {
   minimizeWindow,
   maximizeWindow,
@@ -10,7 +10,7 @@ const {
   sendMessageToRenderer,
   setLoading,
   sendNotification,
-} = require("./utils/windowUtils");
+} = require("../utils/windowUtils");
 const {
   app,
   ipcMain,
@@ -20,7 +20,7 @@ const {
 } = require("electron");
 
 // ----------------------------------------------------------------------------
-// SECTION 1: LMStudioClient
+// LMStudioClient
 // ----------------------------------------------------------------------------
 
 const client = new LMStudioClient();
@@ -45,7 +45,7 @@ async function loadModel() {
 }
 
 // ----------------------------------------------------------------------------
-// SECTION 2: Application window creation and management
+// Application window creation and management
 // ----------------------------------------------------------------------------
 
 // Create the main application window
@@ -56,13 +56,13 @@ function createWindow() {
     x: 1000,
     y: 480,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "../preload/preload.js"),
     },
     frame: false,
-    icon: path.join(__dirname, "icons", "icon.ico"),
+    icon: path.join(__dirname, "../../public/icons/icon.ico"),
   });
   mainWindow.setMenuBarVisibility(false);
-  mainWindow.loadFile("index.html");
+  mainWindow.loadFile(path.join(__dirname, "../../public/index.html"));
 
   monitorClipboard();
 }
@@ -73,11 +73,12 @@ function createNewWindow(text1, text2) {
     width: 800,
     height: 600,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: path.join(__dirname, "../preload/preload.js"),
     },
     frame: false,
+    icon: path.join(__dirname, "../../public/icons/icon.ico"),
   });
-  newWindow.loadFile("newWindow.html");
+  newWindow.loadFile(path.join(__dirname, "../../public/newWindow.html"));
   newWindow.webContents.on("did-finish-load", () => {
     newWindow.webContents.send("send-text", text1, text2);
   });
@@ -85,7 +86,7 @@ function createNewWindow(text1, text2) {
 }
 
 // ----------------------------------------------------------------------------
-// SECTION 3: Text processing functions
+// Text processing functions
 // ----------------------------------------------------------------------------
 
 // Redact the text using the LLM model
@@ -241,7 +242,7 @@ async function redactFile(filePath) {
 }
 
 // ----------------------------------------------------------------------------
-// SECTION 4: IPC Handlers
+// IPC Handlers
 // ----------------------------------------------------------------------------
 
 ipcMain.on("minimize-window", (event) => {
@@ -277,7 +278,7 @@ ipcMain.on("redact-file", async (event, filePath) => {
 });
 
 // ----------------------------------------------------------------------------
-// SECTION 5: App lifecycle events
+// App lifecycle events
 // ----------------------------------------------------------------------------
 
 // Unregister all shortcuts before quitting
