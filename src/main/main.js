@@ -218,7 +218,7 @@ async function redactFile(filePath) {
     }
 
     const pdfBuffer = fs.readFileSync(filePath);
-    const duplicateFilePath = filePath.replace(/(\.[\w\d_-]+)$/i, "-REDACT$1");
+    const outputFilePath = filePath + "-REDACTED.txt";
 
     let text;
     if (extname === ".pdf") {
@@ -231,8 +231,6 @@ async function redactFile(filePath) {
     mapping = createMapping(result, text);
     createNewWindow(result, text);
 
-    const outputFilePath =
-      extname === ".pdf" ? duplicateFilePath + ".txt" : duplicateFilePath;
     fs.writeFileSync(outputFilePath, result);
   } catch (err) {
     console.error(`Error processing file: ${err.message}`);
