@@ -1,4 +1,5 @@
 const { BrowserWindow, Notification } = require("electron");
+const path = require("node:path");
 
 // Minimize the window
 function minimizeWindow() {
@@ -44,7 +45,7 @@ function setLoading(isLoading) {
 }
 
 // Notify the user when PII is detected by sending a notification and flashing the taskbar icon
-function sendNotification(window, title, body) {
+function sendNotification(window, app, title, body) {
   const notification = new Notification({
     title: title,
     body: body,

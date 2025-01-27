@@ -48,9 +48,11 @@ async function loadModel() {
 // Application window creation and management
 // ----------------------------------------------------------------------------
 
+let mainWindow;
+
 // Create the main application window
 function createWindow() {
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 250,
     height: 250,
     x: 1000,
@@ -102,7 +104,7 @@ async function redact(text) {
       "Here is the text after replacing all personal details with placeholders like [NAME] etc.:\n\n" +
       "Send it to [PHONE_NUM] ",
     {
-      maxPredictedTokens: Math.floor(length / 3.3),
+      maxPredictedTokens: Math.floor(length / 3.32),
     }
   );
 
@@ -120,16 +122,19 @@ async function checkPII(text) {
   let model;
   model = await loadModel();
   const prediction = model.respond([
-    { role: "system", content: "You handle requests in a direct manner." },
+    {
+      role: "system",
+      content:
+        "Does this text contain any personal details like names, addresses, and phone numbers? Reply with YES or NO",
+    },
     {
       role: "user",
-      content:
-        text +
-        "Does this text contain any personal details like names, addresses, and phone numbers? Reply with YES or NO",
+      content: text,
     },
   ]);
   const result = await prediction;
   setLoading(false);
+  process.stdout.write(result.content);
   return result.content;
 }
 
@@ -163,6 +168,7 @@ function checkClipboard() {
 
         sendNotification(
           mainWindow,
+          app,
           "Personal Information Detected",
           "Personal information detected in clipboard"
         );
