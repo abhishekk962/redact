@@ -19,13 +19,17 @@ const {
   clipboard,
 } = require("electron");
 
+// Load configuration
+const configPath = path.join(__dirname, "../config.json");
+const config = JSON.parse(fs.readFileSync(configPath, "utf-8"));
+const modelPath = config.modelPath;
+const enableClipboardMonitoring = config.enableClipboardMonitoring;
+
 // ----------------------------------------------------------------------------
 // LMStudioClient
 // ----------------------------------------------------------------------------
 
 const client = new LMStudioClient();
-
-const modelPath = "Beta/Llama-3.2-3B-QNN";
 
 // Look for the model, if not found, load it
 async function loadModel() {
@@ -66,7 +70,9 @@ function createWindow() {
   mainWindow.setMenuBarVisibility(false);
   mainWindow.loadFile(path.join(__dirname, "../../public/index.html"));
 
-  monitorClipboard();
+  if (enableClipboardMonitoring) {
+    monitorClipboard();
+  }
 }
 
 // Create a new window to display the results (input and output text)
