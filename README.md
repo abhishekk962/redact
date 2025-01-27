@@ -4,38 +4,46 @@
 
 ## Features
 
-- Redact personal information from text documents and clipboard content.
-- Restore original content from redacted text.
-- Drag-and-drop support for files.
-- Visual indicators for loading states.
-- Popup messages for user notifications.
+- Intuitive UI for redacting personal information from text documents and the clipboard
+- Quick editing of redacted text
+- Simple restoration of original content
+- Drag-and-drop support for easy file import
+- Popup notifications for user alerts
+- Generate redacted clones of PDF and TXT files by appending `-REDACTED` to the filename
 
 ## Preview
 
-![R.E.D.A.C.T Preview](images/preview.png)
+![R.E.D.A.C.T Preview](public\images\preview.png)
 
-## Installation
+### Installation
 
-1. Clone the repository:
+1. **Clone the repository**:  
+   ```sh
+   git clone https://github.com/abhishekk962/redact.git
+   cd redact
+   ```
 
-    ```sh
-    git clone https://github.com/abhishekk962/redact.git
-    cd redact
-    ```
+2. **Install dependencies**:
+   ```sh
+   npm install
+   ```
 
-2. Install dependencies:
+3. **Install LM Studio v0.3.5**:  
+   [Download here](https://releases.lmstudio.ai/linux/x86/0.3.5/beta/9h/LM_Studio-0.3.5.AppImage).  
+   *(Use v0.3.5 for QNN model compatibility. Future versions may not support it.)*
 
-    ```sh
-    npm install
-    ```
+4. **Download Llama 3.2 3B Model**:
+   - **Beta access**: Download Llama 3.2 3B QNN to the model directory.  
+   - **No beta access**: Download Llama 3.2 3B Instruct from the LM Studio interface.
 
-3. Install LM Studio from [https://lmstudio.ai/](https://lmstudio.ai/).
+5. **Update the configuration**:  
+    In LM Studio, locate the `indexedModelIdentifier` in the model details. Copy it and update the `modelPath` in [config.json](src/config.json).
 
-4. Start the application:
-
-    ```sh
-    npm start
-    ```
+6. **Start the application**:  
+   *(Ensure LM Studio is running. For headless mode, enable Local LLM Service in LM Studio settings.)*  
+   ```sh
+   npm start
+   ```
 
 ## Usage
 
@@ -48,19 +56,23 @@ Click the "Restore Clipboard" button to restore the original content from the re
 The restored content will be displayed in a new window.
 
 ### Redact Document
-Drag and drop a text document onto the "Redact Document" area.  
-The redacted content will be displayed in a new window.
+Drag and drop a text or PDF document onto the "Redact Document" section. The application will display the redacted content in a new window and automatically save it as a text file with the "-REDACTED" suffix.
 
-## Development
+### Edit Redacted Content
+Click on any redacted word on the output window to restore it if you wish to make edits.
 
-### Main Process
-The main process is defined in `main.js`. It handles the creation of browser windows, IPC communication, and the redaction and restoration of text content.
+## Note on Accuracy
+The app may fail to detect all PII in the clipboard/document and may not redact everything properly, because it uses a smaller model. Exercise caution.
 
-### Renderer Process
-The renderer process is defined in `renderer.js` and `newWindowRenderer.js`. It handles the UI interactions and communicates with the main process via IPC.
+## Examples
+The [examples/](examples/) folder includes sample input and output files to demonstrate the redaction process:
+- **example_data.txt** – Contains mock personal information for testing text redactions.
+- **example_data.txt-REDACTED.txt** – Shows how the original text file is transformed after redaction.
+- **example_data.pdf** – A short PDF showcasing PDF redaction.
+- **example_data.pdf-REDACTED.txt** – Demonstrates how a redacted PDF is converted into a text file with personal information removed.
 
-### Preload Script
-The preload script is defined in `preload.js`. It exposes the IPC methods to the renderer process.
+Feel free to experiment with these files to see how the app detects and redacts sensitive data.
 
-### Styles
-The styles are defined in `style.css`. It includes styles for the title bar, content area, buttons, and loading indicators.
+## License
+[MIT License](LICENSE)
+
