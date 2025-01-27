@@ -13,7 +13,7 @@
 
 ## Preview
 
-![R.E.D.A.C.T Preview](public\images\preview.png)
+![R.E.D.A.C.T Preview](public/images/preview.png)
 
 ### Installation
 
